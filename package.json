@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@types/sqlite3": "^3.1.6",
+    "sqlite3": "^5.0.0",
+    "typescript": "^3.9.7"
+  }
+}
