@@ -1,8 +1,11 @@
-import sqlite3 from 'sqlite3'
+import * as fs from 'fs'
+import {homedir} from 'os'
+import * as sqlite3 from 'sqlite3'
 
-const db = new sqlite3.Database("./elastic")
 
 const [queryTerm] = process.argv.slice(2)
+
+const zealDir = `${homedir()}/.local/share/Zeal/Zeal/docsets`
 
 interface IndexEntry {
   name: string
@@ -12,11 +15,31 @@ interface IndexEntry {
 
 const query = `SELECT * FROM 'searchIndex' WHERE name LIKE '%${queryTerm}%' LIMIT 0,30`;
 
-db.all(query, function (err, result: IndexEntry[]) {
+fs.readdir(zealDir, (err, files) => {
   if (err) {
     console.error(err);
     process.exit(1)
   }
 
-  console.log(result);
-});
+  files
+    .filter(file => file.includes('.docset'))
+    .forEach(file => {
+      const db = new sqlite3.Database(`${zealDir}/${file}/Contents/Resources/docSet.dsidx`)
+      
+      db.all(query, function (err, result: IndexEntry[]) {
+        if (err) {
+          console.error(err);
+          process.exit(1)
+        }
+
+        if (result.length > 0) {
+          const output = result.map(res => res.path).join('\n')
+          console.info(file)
+          console.log(output)
+        }
+      })
+    })
+})
+
+
+
