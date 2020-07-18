@@ -4,38 +4,59 @@ import * as sqlite3 from 'sqlite3'
 
 import {start} from './dbus-connection'
 
-const zealDir = `${homedir()}/.local/share/Zeal/Zeal/docsets`
-
 interface IndexEntry {
   name: string
   type: string
   path: string
 }
 
+interface IndexResult {
+  results: IndexEntry[]
+  docsetName: string,
+}
 
-function queryIndex(query:string, file: string): Promise<string[]> {
-  return new Promise((resolve, reject) => {
+type IndexQuery = (query: string) => Promise<IndexResult>
+
+const zealDir = `${homedir()}/.local/share/Zeal/Zeal/docsets`
+
+const files = fs.readdirSync(zealDir).filter(file => file.includes('.docset'))
+const dbs: IndexQuery[] = files
+  .map(file => {
     const db = new sqlite3.Database(`${zealDir}/${file}/Contents/Resources/docSet.dsidx`)
     const docsetName = file.replace('.docset', '')
 
-    db.all(query, (err, result: IndexEntry[]) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(result.map(row => `${docsetName} : ${row.name}`))
-      }
-    })
+    return (query): Promise<IndexResult> =>
+      new Promise((resolve, reject) => {
+        db.all(query, (err, results: IndexEntry[]) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve({results, docsetName})
+          }
+        })
+      })
   })
+
+async function queryIndex(query:string): Promise<string[]> {
+  try {
+    const queries = dbs.map(getAll => getAll(query))
+  
+    const data = await Promise.all(queries)
+  
+    return data.flatMap(({results, docsetName}) =>
+      results.map(entry => `${docsetName} : ${entry.name}`))
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 async function queryDocsIndexes (queryTerm: string): Promise<string[]> {
-  const query = `SELECT * FROM 'searchIndex' WHERE name LIKE '%${queryTerm}%' LIMIT 1`;
+  const query = `SELECT * FROM 'searchIndex' WHERE name LIKE '%${queryTerm}%' LIMIT 5`;
 
-  const files = fs.readdirSync(zealDir).filter(file => file.includes('.docset'))
-  
-  const names = files.map(file => queryIndex(query, file))
+  const result = await queryIndex(query)
+  console.log(result)
 
-  return (await Promise.all(names)).flat()
+  return result.slice(0, 10)
 }
 
 start(queryDocsIndexes)

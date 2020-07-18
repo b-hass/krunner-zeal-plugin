@@ -49,13 +49,17 @@ export function start (queryFunction: (query: string) => Promise<string[]>) {
     path: '/com/github/sidorares/1',
     runFunction(matchID: string, actionID: string) {
       console.log(`Match ID: ${matchID} ActionID: ${actionID}`)
-      return [["JS-Runer", "Hello There!!", "planetkde", 50, 1, {}]]
+      return [["JS-Runer", "Hello There!", "planetkde", 50, 1, {}]]
   
     },
     async matchFunction(query: string) {
       const res = await queryFunction(query)
 
-      return res.map(result => ["JS-Runer", result, "planetkde", 50, 1, {}])
+      return res.map(result => ["abc", result, "planetkde", 50, 1, {}])
+    },
+    actionsFunction(arg) {
+      console.log(arg)
+      return [["JS-Runer", "Hello There!", "planetkde", 50, 1, {}]]
     }
   })
 }

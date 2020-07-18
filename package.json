@@ -2,12 +2,14 @@
   "main": "dist/plugin.js",
   "scripts": {
     "start": "node dist/plugin.js",
-    "build": "pkg dist/plugin.js --target=node12-linux-x64 --output ./bin/org/kde/krunner-zeal-standalone.run"
+    "build": "pkg dist/plugin.js --target=node12-linux-x64 --output ./bin/krunner-zeal-standalone.run"
   },
   "dependencies": {
     "@types/sqlite3": "^3.1.6",
     "dbus-native": "^0.4.0",
-    "sqlite3": "^5.0.0",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
     "typescript": "^3.9.7"
   }
 }
