@@ -2,6 +2,8 @@ import * as fs from 'fs'
 import {homedir} from 'os'
 import * as sqlite3 from 'sqlite3'
 
+import {start} from './dbus-connection'
+
 
 const [queryTerm] = process.argv.slice(2)
 
@@ -34,8 +36,6 @@ fs.readdir(zealDir, (err, files) => {
 
         if (result.length > 0) {
           const output = result.map(res => res.path).join('\n')
-          console.info(file)
-          console.log(output)
         }
       })
     })

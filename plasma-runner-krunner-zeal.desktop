@@ -1,0 +1,17 @@
+[Desktop Entry]
+Name=krunner-zeal
+Comment=krunner-zeal KRunner plugin
+X-KDE-ServiceTypes=Plasma/Runner
+Type=Service
+Icon=planetkde
+
+X-KDE-PluginInfo-Author=Bruno Hass
+X-KDE-PluginInfo-Email=kde@example.com
+X-KDE-PluginInfo-Name=krunner-zeal
+X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-License=GPL-3.0
+X-KDE-PluginInfo-EnabledByDefault=true
+
+X-Plasma-API=DBus
+X-Plasma-DBusRunner-Service=some.name
+X-Plasma-DBusRunner-Path=/com/github/sidorares/1
