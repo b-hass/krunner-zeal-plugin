@@ -4,9 +4,6 @@ import * as sqlite3 from 'sqlite3'
 
 import {start} from './dbus-connection'
 
-
-const [queryTerm] = process.argv.slice(2)
-
 const zealDir = `${homedir()}/.local/share/Zeal/Zeal/docsets`
 
 interface IndexEntry {
@@ -15,31 +12,30 @@ interface IndexEntry {
   path: string
 }
 
-const query = `SELECT * FROM 'searchIndex' WHERE name LIKE '%${queryTerm}%' LIMIT 0,30`;
 
-fs.readdir(zealDir, (err, files) => {
-  if (err) {
-    console.error(err);
-    process.exit(1)
-  }
+function queryIndex(query:string, file: string): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database(`${zealDir}/${file}/Contents/Resources/docSet.dsidx`)
+    const docsetName = file.replace('.docset', '')
 
-  files
-    .filter(file => file.includes('.docset'))
-    .forEach(file => {
-      const db = new sqlite3.Database(`${zealDir}/${file}/Contents/Resources/docSet.dsidx`)
-      
-      db.all(query, function (err, result: IndexEntry[]) {
-        if (err) {
-          console.error(err);
-          process.exit(1)
-        }
-
-        if (result.length > 0) {
-          const output = result.map(res => res.path).join('\n')
-        }
-      })
+    db.all(query, (err, result: IndexEntry[]) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(result.map(row => `${docsetName} : ${row.name}`))
+      }
     })
-})
+  })
+}
 
+async function queryDocsIndexes (queryTerm: string): Promise<string[]> {
+  const query = `SELECT * FROM 'searchIndex' WHERE name LIKE '%${queryTerm}%' LIMIT 1`;
 
+  const files = fs.readdirSync(zealDir).filter(file => file.includes('.docset'))
+  
+  const names = files.map(file => queryIndex(query, file))
 
+  return (await Promise.all(names)).flat()
+}
+
+start(queryDocsIndexes)

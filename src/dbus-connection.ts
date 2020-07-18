@@ -44,18 +44,19 @@ function createKRunnerInterface({
   sessionBus.exportInterface(interfaceFunctions, path, interfaceDesc)
 }
 
-export function start () {
+export function start (queryFunction: (query: string) => Promise<string[]>) {
   createKRunnerInterface({
     path: '/com/github/sidorares/1',
     runFunction(matchID: string, actionID: string) {
       console.log(`Match ID: ${matchID} ActionID: ${actionID}`)
-      return [["JS-Runer", "Hello There!", "planetkde", 50, 1, {}]]
+      return [["JS-Runer", "Hello There!!", "planetkde", 50, 1, {}]]
   
     },
-    matchFunction(query: string) {
-      console.log(query)
-      console.log(`Javascript Runner: ${query}`)
-      return [["JS-Runer", "Hello There!", "planetkde", 50, 1, {}]]
+    async matchFunction(query: string) {
+      const res = await queryFunction(query)
+      console.log(res)
+
+      return res.map(result => [["JS-Runer", result, "planetkde", 50, 1, {}]])
     }
   })
 }
