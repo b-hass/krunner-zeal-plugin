@@ -54,9 +54,8 @@ export function start (queryFunction: (query: string) => Promise<string[]>) {
     },
     async matchFunction(query: string) {
       const res = await queryFunction(query)
-      console.log(res)
 
-      return res.map(result => [["JS-Runer", result, "planetkde", 50, 1, {}]])
+      return res.map(result => ["JS-Runer", result, "planetkde", 50, 1, {}])
     }
   })
 }
