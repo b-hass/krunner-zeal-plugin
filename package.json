@@ -5,8 +5,10 @@
     "build": "pkg dist/plugin.js --target=node12-linux-x64 --output ./bin/krunner-zeal-standalone.run"
   },
   "dependencies": {
+    "@types/debounce": "^1.2.0",
     "@types/sqlite3": "^3.1.6",
     "dbus-native": "^0.4.0",
+    "debounce": "^1.2.0",
     "sqlite3": "^5.0.0"
   },
   "devDependencies": {

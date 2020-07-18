@@ -1,6 +1,8 @@
 const dbus = require("dbus-native")
 const { exec } = require('child_process')
 
+import {debounce} from 'debounce'
+
 interface KRunnerArgs {
   path: string, 
   runFunction?: Function,
@@ -57,10 +59,10 @@ export function start (queryFunction: (query: string) => Promise<string[]>) {
 
       return [["KrunnerZeal", "Hello There!", "planetkde", 50, 1, {}]]
     },
-    async matchFunction(query: string) {
+    matchFunction: debounce(async (query: string) => {
       const res = await queryFunction(query)
 
       return res.map(result => [result, result, "planetkde", 100, 1, {}])
-    }
+    }, 300, true)
   })
 }
