@@ -51,7 +51,7 @@ async function queryIndex(query:string): Promise<string[]> {
 }
 
 async function queryDocsIndexes (queryTerm: string): Promise<string[]> {
-  const query = `SELECT * FROM 'searchIndex' WHERE name LIKE '%${queryTerm}%' LIMIT 5`;
+  const query = `SELECT * FROM 'searchIndex' WHERE name LIKE '%${queryTerm}%' COLLATE NOCASE LIMIT 5`;
 
   const result = await queryIndex(query)
   console.log(result)
