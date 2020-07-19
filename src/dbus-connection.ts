@@ -1,4 +1,4 @@
-const dbus = require("dbus-native")
+const dbus = require('dbus-native')
 const { exec } = require('child_process')
 
 import {debounce} from 'debounce'
@@ -11,15 +11,15 @@ interface KRunnerArgs {
 }
 
 const sessionBus = dbus.sessionBus()
-if (!sessionBus) throw new Error("Could not connect to session bus")
+if (!sessionBus) throw new Error('Could not connect to session bus')
 
-sessionBus.requestName("some.name", 0x04, (err: any, code: number) => {
+sessionBus.requestName('krunner.zeal', 0x04, (err: any, code: number) => {
   if (err) throw new Error(err)
 
   if (code === 3) throw new Error(`Anotherkde/krunner/plugin/zeal instance is already running`)
   if (code !== 1)
     throw new Error(
-      `Received code ${code} while requesting service name "net.krunner-zeal"`
+      `Received code ${code} while requesting service name 'net.krunner-zeal'`
     )
 })
 
@@ -49,7 +49,7 @@ function createKRunnerInterface({
 
 export function start (queryFunction: (query: string) => Promise<string[]>) {
   createKRunnerInterface({
-    path: '/com/github/sidorares/1',
+    path: '/com/github/krunnerzeal/1',
     runFunction(matchID: string, actionID: string) {
       console.log(`Match ID: ${matchID} ActionID: ${actionID}`)
 
@@ -57,12 +57,12 @@ export function start (queryFunction: (query: string) => Promise<string[]>) {
 
       exec(`zeal ${zealQuery}`)
 
-      return [["KrunnerZeal", "Hello There!", "planetkde", 50, 1, {}]]
+      return [['KrunnerZeal', 'Hello There!', 'planetkde', 50, 1, {}]]
     },
     matchFunction: debounce(async (query: string) => {
       const res = await queryFunction(query)
 
-      return res.map(result => [result, result, "planetkde", 100, 1, {}])
+      return res.map(result => [result, result, 'planetkde', 100, 1, {}])
     }, 300, true)
   })
 }

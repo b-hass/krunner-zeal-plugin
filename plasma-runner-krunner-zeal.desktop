@@ -13,5 +13,5 @@ X-KDE-PluginInfo-License=GPL-3.0
 X-KDE-PluginInfo-EnabledByDefault=true
 
 X-Plasma-API=DBus
-X-Plasma-DBusRunner-Service=some.name
-X-Plasma-DBusRunner-Path=/com/github/sidorares/1
+X-Plasma-DBusRunner-Service=krunner.zeal
+X-Plasma-DBusRunner-Path=/com/github/krunnerzeal/1

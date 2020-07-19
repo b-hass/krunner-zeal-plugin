@@ -1,0 +1,12 @@
+[Unit]
+Description=Krunner Zeal
+After=graphical.target
+
+[Service]
+ExecStart=/usr/lib/qt/plugins/krunner-zeal-standalone/krunner-zeal-standalone.run
+User=${USER}
+Environment=DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS}
+Environment="DISPLAY=:0"
+
+[Install]
+WantedBy=multi-user.target

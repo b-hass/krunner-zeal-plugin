@@ -23,7 +23,7 @@ const files = fs.readdirSync(zealDir).filter(file => file.includes('.docset'))
 const dbs: IndexQuery[] = files
   .map(file => {
     const db = new sqlite3.Database(`${zealDir}/${file}/Contents/Resources/docSet.dsidx`)
-    const docsetName = file.replace('.docset', '')
+    const docsetName = file.replace('.docset', '').toLowerCase()
 
     return (query): Promise<IndexResult> =>
       new Promise((resolve, reject) => {
