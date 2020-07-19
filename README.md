@@ -15,3 +15,4 @@ If you don't want to use the script you can:
 
 Once krunner-zeal is installed just type your Zeal query into krunner and enjoy opening your docs from there.
 
+![Screenshot](screenshot.png)

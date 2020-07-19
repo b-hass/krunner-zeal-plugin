@@ -62,7 +62,7 @@ export function start (queryFunction: (query: string) => Promise<string[]>) {
     matchFunction: debounce(async (query: string) => {
       const res = await queryFunction(query)
 
-      return res.map(result => [result, result, 'planetkde', 100, 1, {}])
+      return res.map(result => [result, result, 'zeal', 100, 1, {}])
     }, 300, true)
   })
 }
