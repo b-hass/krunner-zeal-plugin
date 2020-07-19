@@ -23,7 +23,8 @@ const files = fs.readdirSync(zealDir).filter(file => file.includes('.docset'))
 const dbs: IndexQuery[] = files
   .map(file => {
     const db = new sqlite3.Database(`${zealDir}/${file}/Contents/Resources/docSet.dsidx`)
-    const docsetName = file.replace('.docset', '').toLowerCase()
+    const metadata = fs.readFileSync(`${zealDir}/${file}/Contents/Info.plist`, 'utf-8')
+    const docsetName = /<string>(\w+)<\/string>/.exec(metadata)[1]
 
     return (query): Promise<IndexResult> =>
       new Promise((resolve, reject) => {
@@ -54,7 +55,6 @@ async function queryDocsIndexes (queryTerm: string): Promise<string[]> {
   const query = `SELECT * FROM 'searchIndex' WHERE name LIKE '%${queryTerm}%' COLLATE NOCASE LIMIT 5`;
 
   const result = await queryIndex(query)
-  console.log(result)
 
   return result.slice(0, 10)
 }

@@ -51,8 +51,6 @@ export function start (queryFunction: (query: string) => Promise<string[]>) {
   createKRunnerInterface({
     path: '/com/github/krunnerzeal/1',
     runFunction(matchID: string, actionID: string) {
-      console.log(`Match ID: ${matchID} ActionID: ${actionID}`)
-
       const zealQuery = matchID.replace(/ /g, '')
 
       exec(`zeal ${zealQuery}`)
