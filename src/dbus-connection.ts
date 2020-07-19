@@ -51,9 +51,7 @@ export function start (queryFunction: (query: string) => Promise<string[]>) {
   createKRunnerInterface({
     path: '/com/github/krunnerzeal/1',
     runFunction(matchID: string, actionID: string) {
-      const zealQuery = matchID.replace(/ /g, '')
-
-      exec(`zeal ${zealQuery}`)
+      exec(`zeal '${matchID}'`)
 
       return [['KrunnerZeal', 'Hello There!', 'planetkde', 50, 1, {}]]
     },

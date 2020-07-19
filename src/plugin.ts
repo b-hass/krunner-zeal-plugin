@@ -45,7 +45,7 @@ async function queryIndex(query:string): Promise<string[]> {
     const data = await Promise.all(queries)
   
     return data.flatMap(({results, docsetName}) =>
-      results.map(entry => `${docsetName} : ${entry.name}`))
+      results.map(entry => `${docsetName}:${entry.name}`))
   } catch (err) {
     console.log(err)
   }
