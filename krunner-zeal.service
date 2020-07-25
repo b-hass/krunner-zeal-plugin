@@ -7,6 +7,7 @@ ExecStart=/usr/lib/qt/plugins/krunner-zeal-standalone/krunner-zeal-standalone.ru
 User=${USER}
 Environment=DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS}
 Environment="DISPLAY=:0"
+Type=oneshot
 
 [Install]
 WantedBy=multi-user.target

@@ -17,30 +17,47 @@ interface IndexResult {
 
 type IndexQuery = (query: string) => Promise<IndexResult>
 
+type DBMap = {
+  [docsetName: string]: IndexQuery
+}
+
 const zealDir = `${homedir()}/.local/share/Zeal/Zeal/docsets`
 
 const files = fs.readdirSync(zealDir).filter(file => file.includes('.docset'))
-const dbs: IndexQuery[] = files
-  .map(file => {
+const dbs: DBMap = files
+  .reduce((acc, file) => {
     const db = new sqlite3.Database(`${zealDir}/${file}/Contents/Resources/docSet.dsidx`)
     const metadata = fs.readFileSync(`${zealDir}/${file}/Contents/Info.plist`, 'utf-8')
     const docsetName = /<string>(\w+)<\/string>/.exec(metadata)[1]
 
-    return (query): Promise<IndexResult> =>
-      new Promise((resolve, reject) => {
-        db.all(query, (err, results: IndexEntry[]) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve({results, docsetName})
-          }
+    return {
+      ...acc, 
+      [docsetName]: (query: string): Promise<IndexResult> =>
+        new Promise((resolve, reject) => {
+          db.all(query, (err, results: IndexEntry[]) => {
+            if (err) {
+              reject(err)
+            } else {
+              resolve({results, docsetName})
+            }
+          })
         })
-      })
-  })
+      }
+  }, {})
 
-async function queryIndex(query:string): Promise<string[]> {
+const dbsList = Object.values(dbs)
+
+type Query =  { db?: string, term: string }
+
+async function queryIndex(query: Query): Promise<string[]> {
   try {
-    const queries = dbs.map(getAll => getAll(query))
+    const dbQuery = query.term === '' ?
+      `SELECT * FROM 'searchIndex' LIMIT 5` :
+      `SELECT * FROM 'searchIndex' WHERE name LIKE '%${query.term}%' COLLATE NOCASE LIMIT 5`
+
+    const queryDB = query.db && dbs[query.db]
+
+    const queries = queryDB ? [queryDB(dbQuery)] : dbsList.map(getAll => getAll(dbQuery))
   
     const data = await Promise.all(queries)
   
@@ -51,12 +68,22 @@ async function queryIndex(query:string): Promise<string[]> {
   }
 }
 
-async function queryDocsIndexes (queryTerm: string): Promise<string[]> {
-  const query = `SELECT * FROM 'searchIndex' WHERE name LIKE '%${queryTerm}%' COLLATE NOCASE LIMIT 5`;
+function parseQuery (query: string): Query {
+  if (query.includes(':')) {
+    const [db, term] = query.split(':')
+    return  {db, term}
+  } else {
+    return {term: query}
+  }
+}
 
-  const result = await queryIndex(query)
+async function queryDocsIndexes (query: string): Promise<string[]> {
+  const parsedQuery = parseQuery(query)
+
+  const result = await queryIndex(parsedQuery)
 
   return result.slice(0, 10)
 }
+
 
 start(queryDocsIndexes)
